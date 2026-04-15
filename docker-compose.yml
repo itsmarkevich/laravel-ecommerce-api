@@ -1,0 +1,67 @@
+services:
+  app:
+    container_name: pizza-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/var/www/html
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - laravel
+
+  nginx:
+    image: nginx:alpine
+    container_name: laravel_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - laravel
+
+  db:
+    image: postgres:18
+    container_name: laravel_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: rootpass
+      POSTGRES_DB: pizza_app_db
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./docker/initdb:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - laravel
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    networks:
+      - laravel
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    networks:
+      - laravel
+
+volumes:
+  pgdata:
+
+networks:
+  laravel:
