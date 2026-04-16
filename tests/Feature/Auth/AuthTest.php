@@ -29,7 +29,7 @@ class AuthTest extends TestCase
         $this->mock(SmsGateway::class)->shouldReceive('send')->once();
 
         $this->postJson("{$this->apiBase}/send-code", [
-            'phone' => $phone
+            'phone' => $phone,
         ])->assertJson([
             'success' => true,
             'message' => 'Код отправлен',
@@ -47,7 +47,7 @@ class AuthTest extends TestCase
         $phone = '89991234';
 
         $this->postJson("{$this->apiBase}/send-code", [
-            'phone' => $phone
+            'phone' => $phone,
         ])->assertStatus(422)
             ->assertJsonValidationErrors(['phone']);
     }
@@ -66,7 +66,7 @@ class AuthTest extends TestCase
             ->andReturn([
                 'access_token' => 'fake_token',
                 'token_type' => 'bearer',
-                'expires_in' => 3600
+                'expires_in' => 3600,
             ]);
 
         $this->postJson("{$this->apiBase}/verify-code", [
@@ -86,7 +86,7 @@ class AuthTest extends TestCase
             ])
             ->assertJsonFragment([
                 'phone' => $phone,
-                'requires_profile_completion' => true
+                'requires_profile_completion' => true,
             ])
             ->assertStatus(200);
 
@@ -111,7 +111,7 @@ class AuthTest extends TestCase
             'code' => 333222,
         ])
             ->assertJsonFragment([
-                'message' => 'Неверный код'
+                'message' => 'Неверный код',
             ])
             ->assertStatus(401);
 
@@ -136,7 +136,7 @@ class AuthTest extends TestCase
             'email' => $email,
         ])
             ->assertJsonFragment([
-                'message' => 'Профиль успешно заполнен'
+                'message' => 'Профиль успешно заполнен',
             ])
             ->assertStatus(200);
 
@@ -179,7 +179,7 @@ class AuthTest extends TestCase
             ->andReturn([
                 'access_token' => 'new_access_token',
                 'token_type' => 'bearer',
-                'expires_in' => 3600
+                'expires_in' => 3600,
             ]);
 
         $this->swap(TokenService::class, $mock);
@@ -191,7 +191,7 @@ class AuthTest extends TestCase
             ->assertJsonStructure([
                 'access_token',
                 'token_type',
-                'expires_in'
+                'expires_in',
             ]);
     }
 
@@ -203,7 +203,7 @@ class AuthTest extends TestCase
             ->postJson("{$this->apiBase}/refresh")
             ->assertStatus(401);
         $response->assertJsonFragment([
-            'message' => 'Token not provided'
+            'message' => 'Token not provided',
         ]);
     }
 
@@ -216,7 +216,7 @@ class AuthTest extends TestCase
             ->assertStatus(401);
 
         $response->assertJsonFragment([
-            'error' => 'Invalid token'
+            'error' => 'Invalid token',
         ]);
     }
 
@@ -238,7 +238,7 @@ class AuthTest extends TestCase
             ->assertStatus(401);
 
         $response->assertJsonFragment([
-            'error' => 'Token cannot be refreshed'
+            'error' => 'Token cannot be refreshed',
         ]);
     }
 
@@ -260,7 +260,7 @@ class AuthTest extends TestCase
             ->assertStatus(401);
 
         $response->assertJsonFragment([
-            'error' => 'Token blacklisted'
+            'error' => 'Token blacklisted',
         ]);
     }
 

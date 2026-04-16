@@ -14,7 +14,8 @@ class RegistrationService
                 'phone_verified_at' => null,
                 'name' => null,
                 'email' => null,
-            ]);
+            ]
+        );
     }
 
     public function completeProfile(User $user, string $name, string $email): User

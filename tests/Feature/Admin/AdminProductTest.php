@@ -44,10 +44,10 @@ class AdminProductTest extends TestCase
                         'category' => [
                             'id',
                             'name',
-                            'slug'
-                        ]
-                    ]
-                ]
+                            'slug',
+                        ],
+                    ],
+                ],
             ]);
     }
 
@@ -89,8 +89,8 @@ class AdminProductTest extends TestCase
                 'category' => [
                     'id',
                     'name',
-                    'slug'
-                ]
+                    'slug',
+                ],
             ]);
 
         $this->assertDatabaseHas('products', [
@@ -120,8 +120,8 @@ class AdminProductTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonStructure([
                 'errors' => [
-                    'name'
-                ]
+                    'name',
+                ],
             ]);
     }
 
@@ -150,9 +150,9 @@ class AdminProductTest extends TestCase
                     'category' => [
                         'id',
                         'name',
-                        'slug'
-                    ]
-                ]
+                        'slug',
+                    ],
+                ],
             ]);
     }
 
