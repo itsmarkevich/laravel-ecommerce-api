@@ -1,6 +1,6 @@
 <?php
 
-namespace Feature\Admin;
+namespace Tests\Feature\Admin;
 
 use App\Models\Category;
 use App\Models\Product;
@@ -62,7 +62,7 @@ class AdminProductTest extends TestCase
             ->assertStatus(403);
     }
 
-    public function test_admin_can_create_product()
+    public function test_admin_can_create_product(): void
     {
         $admin = User::factory()
             ->asAdmin()
@@ -169,7 +169,7 @@ class AdminProductTest extends TestCase
             ->assertStatus(404);
     }
 
-    public function test_admin_can_update_product()
+    public function test_admin_can_update_product(): void
     {
         $admin = User::factory()
             ->asAdmin()

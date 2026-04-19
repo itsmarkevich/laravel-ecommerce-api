@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 /**
- * @property int $id
- * @property int $order_id
- * @property int $product_id
- * @property int $quantity
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderProduct newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderProduct newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderProduct query()
+ * @mixin \Eloquent
  */
 
 class OrderProduct extends Pivot

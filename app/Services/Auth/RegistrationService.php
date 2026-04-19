@@ -20,7 +20,7 @@ class RegistrationService
 
     public function completeProfile(User $user, string $name, string $email): User
     {
-        $user->update(compact('name', 'email'));
+        $user->update(['name' => $name, 'email' => $email]);
         return $user;
     }
 

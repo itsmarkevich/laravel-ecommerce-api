@@ -26,7 +26,7 @@ class PhoneVerificationService
     {
         $cachedCode = Cache::get("sms:code:{$phone}");
 
-        if ($cachedCode === null || (string) $cachedCode !== (string) $code) {
+        if ($cachedCode === null || (string) $cachedCode !== $code) {
             return false;
         }
 

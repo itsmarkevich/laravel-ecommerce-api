@@ -2,14 +2,16 @@
 
 namespace Tests;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 abstract class TestCase extends BaseTestCase
 {
-    public function actingAsJWT($user, $guard = 'api'): static
+    public function actingAsJWT(User $user): self
     {
-        $token = auth($guard)->login($user);
-        $this->withHeader('Authorization', 'Bearer ' . $token);
-        return $this;
+        $token = JWTAuth::fromUser($user);
+
+        return $this->withHeader('Authorization', "Bearer $token");
     }
 }

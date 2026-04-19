@@ -100,7 +100,7 @@ class ProductTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_can_get_specific_product()
+    public function test_can_get_specific_product(): void
     {
         $category = Category::factory()
             ->has(Product::factory()->count(1))

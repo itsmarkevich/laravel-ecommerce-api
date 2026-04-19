@@ -3,18 +3,16 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
-use App\Services\Auth\Sms\SmsGateway;
-use App\Services\Auth\TokenService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
-use Mockery;
+use Tests\Concerns\InteractsWithAuthMocks;
 use Tests\TestCase;
 use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 
 class AuthTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, InteractsWithAuthMocks;
 
     protected string $apiBase = '/api/v1/auth';
 
@@ -26,7 +24,7 @@ class AuthTest extends TestCase
         $phone = '89991234567';
         $normalizedPhone = '+79991234567';
 
-        $this->mock(SmsGateway::class)->shouldReceive('send')->once();
+        $this->expectSmsSendOnce();
 
         $this->postJson("{$this->apiBase}/send-code", [
             'phone' => $phone,
@@ -60,14 +58,11 @@ class AuthTest extends TestCase
 
         Cache::put("sms:code:{$phone}", $code, 300);
 
-        $this->mock(TokenService::class)
-            ->shouldReceive('login')
-            ->once()
-            ->andReturn([
-                'access_token' => 'fake_token',
-                'token_type' => 'bearer',
-                'expires_in' => 3600,
-            ]);
+        $this->expectTokenLogin([
+            'access_token' => 'fake_token',
+            'token_type' => 'bearer',
+            'expires_in' => 3600,
+        ]);
 
         $this->postJson("{$this->apiBase}/verify-code", [
             'phone' => $phone,
@@ -171,18 +166,11 @@ class AuthTest extends TestCase
     {
         $token = 'fake_token';
 
-        $mock = Mockery::mock(TokenService::class);
-
-        $mock->shouldReceive('refresh')
-            ->once()
-            ->with($token)
-            ->andReturn([
-                'access_token' => 'new_access_token',
-                'token_type' => 'bearer',
-                'expires_in' => 3600,
-            ]);
-
-        $this->swap(TokenService::class, $mock);
+        $this->expectTokenRefresh($token, [
+            'access_token' => 'new_access_token',
+            'token_type' => 'bearer',
+            'expires_in' => 3600,
+        ]);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
             ->postJson("{$this->apiBase}/refresh");
@@ -224,14 +212,7 @@ class AuthTest extends TestCase
     {
         $token = 'fake_token';
 
-        $mock = Mockery::mock(TokenService::class);
-
-        $mock->shouldReceive('refresh')
-            ->once()
-            ->with($token)
-            ->andThrow(new TokenExpiredException());
-
-        $this->swap(TokenService::class, $mock);
+        $this->expectTokenRefreshToThrow($token, new TokenExpiredException());
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
             ->postJson("{$this->apiBase}/refresh")
@@ -246,14 +227,7 @@ class AuthTest extends TestCase
     {
         $token = 'fake_token';
 
-        $mock = Mockery::mock(TokenService::class);
-
-        $mock->shouldReceive('refresh')
-            ->once()
-            ->with($token)
-            ->andThrow(new TokenBlacklistedException);
-
-        $this->swap(TokenService::class, $mock);
+        $this->expectTokenRefreshToThrow($token, new TokenBlacklistedException());
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
             ->postJson("{$this->apiBase}/refresh")
@@ -273,9 +247,7 @@ class AuthTest extends TestCase
 
         $this->actingAsJWT($user);
 
-        $this->mock(TokenService::class)
-            ->shouldReceive('logout')
-            ->once();
+        $this->expectTokenLogoutOnce();
 
         $this->postJson("{$this->apiBase}/logout")
             ->assertNoContent();

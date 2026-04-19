@@ -3,26 +3,35 @@
 namespace App\Services\Auth;
 
 use App\Models\User;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class TokenService
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function login(User $user): array
     {
         return [
-            'access_token' => auth('api')->login($user),
+            'access_token' => JWTAuth::fromUser($user),
             'token_type' => 'bearer',
         ];
     }
 
     public function logout(): void
     {
-        auth('api')->logout();
-    }
+        $token = JWTAuth::getToken();
 
+        if ($token !== null) {
+            JWTAuth::setToken($token)->invalidate();
+        }
+    }
+    /**
+     * @return array<string, mixed>
+     */
     public function refresh(string $token): array
     {
-
-        $newToken = auth('api')->setToken($token)->refresh();
+        $newToken = JWTAuth::setToken($token)->refresh();
 
         return [
             'access_token' => $newToken,

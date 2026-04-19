@@ -26,7 +26,7 @@ Route::prefix('/v1')->group(function () {
         Route::get('/{category_slug}/{product_slug}', [ProductController::class, 'show']);
     });
 
-    Route::prefix('/admin')->middleware('auth:api', 'admin')->group(function () {
+    Route::prefix('/admin')->middleware(['auth:api', 'admin'])->group(function () {
         Route::apiResource('/categories', AdminCategoryController::class);
         Route::apiResource('/products', AdminProductController::class);
     });
