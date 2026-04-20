@@ -76,4 +76,5 @@ test:
     - cp .env.example .env
     - composer install --no-interaction --prefer-dist
     - php artisan key:generate --force
+    - php artisan jwt:secret --force
     - composer test
