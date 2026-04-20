@@ -14,8 +14,8 @@ class CategoryObserver
 
     public function updating(Category $category): void
     {
-       if ($category->isDirty('name')) {
-           $category->slug = Str::slug($category->name);
-       }
+        if ($category->isDirty('name')) {
+            $category->slug = Str::slug($category->name);
+        }
     }
 }

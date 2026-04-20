@@ -36,8 +36,8 @@ class AdminCategoryTest extends TestCase
                         'id',
                         'name',
                         'slug',
-                    ]
-                ]
+                    ],
+                ],
             ]);
     }
 
@@ -112,7 +112,7 @@ class AdminCategoryTest extends TestCase
                     'id',
                     'name',
                     'slug',
-                ]
+                ],
             ]);
     }
 

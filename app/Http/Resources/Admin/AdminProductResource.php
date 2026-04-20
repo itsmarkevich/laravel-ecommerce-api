@@ -2,8 +2,13 @@
 
 namespace App\Http\Resources\Admin;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+
+/**
+ * @mixin Product
+ */
 
 class AdminProductResource extends JsonResource
 {

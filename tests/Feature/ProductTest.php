@@ -26,7 +26,8 @@ class ProductTest extends TestCase
         $response = $this->get("{$this->apiBase}/menu");
 
         $response->assertStatus(200)
-            ->assertJsonStructure([
+            ->assertJsonStructure(
+                [
                     'data' => [
                         '*' => [
                             'id',
@@ -39,11 +40,11 @@ class ProductTest extends TestCase
                                     'slug',
                                     'description',
                                     'price',
-                                    'weight'
-                                ]
-                            ]
-                        ]
-                    ]
+                                    'weight',
+                                ],
+                            ],
+                        ],
+                    ],
                 ]
             );
     }
@@ -65,7 +66,8 @@ class ProductTest extends TestCase
         $response = $this->get("{$this->apiBase}/menu/{$category->slug}");
 
         $response->assertStatus(200)
-            ->assertJsonStructure([
+            ->assertJsonStructure(
+                [
                     'data' => [
                         'id',
                         'name',
@@ -77,13 +79,14 @@ class ProductTest extends TestCase
                                 'slug',
                                 'description',
                                 'price',
-                                'weight'
-                            ]
-                        ]
-                    ]
+                                'weight',
+                            ],
+                        ],
+                    ],
                 ]
             )
-            ->assertJsonFragment([
+            ->assertJsonFragment(
+                [
                     'id' => $category->id,
                     'slug' => $category->slug,
                 ]
@@ -97,7 +100,7 @@ class ProductTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_can_get_specific_product()
+    public function test_can_get_specific_product(): void
     {
         $category = Category::factory()
             ->has(Product::factory()->count(1))
@@ -115,10 +118,11 @@ class ProductTest extends TestCase
                     'slug',
                     'description',
                     'price',
-                    'weight'
-                ]
+                    'weight',
+                ],
             ])
-            ->assertJsonFragment([
+            ->assertJsonFragment(
+                [
                     'id' => $product->id,
                     'slug' => $product->slug,
                 ]
