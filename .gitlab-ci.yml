@@ -18,28 +18,40 @@ build_image:
 
 cs:
   stage: code-quality
-  image: composer:2
+  image: php:8.2-cli
+  before_script:
+    - apt-get update && apt-get install -y git unzip libzip-dev
+    - docker-php-ext-install zip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
   script:
     - composer install --no-interaction --prefer-dist
     - composer cs:check
 
 phpstan:
   stage: code-quality
-  image: composer:2
+  image: php:8.2-cli
+  before_script:
+    - apt-get update && apt-get install -y git unzip libzip-dev
+    - docker-php-ext-install zip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
   script:
     - composer install --no-interaction --prefer-dist
     - composer stan
 
 rector:
   stage: code-quality
-  image: composer:2
+  image: php:8.2-cli
+  before_script:
+    - apt-get update && apt-get install -y git unzip libzip-dev
+    - docker-php-ext-install zip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
   script:
     - composer install --no-interaction --prefer-dist
     - composer rector:check
 
 test:
   stage: code-quality
-  image: composer:2
+  image: php:8.2-cli
   services:
     - name: postgres:18
       alias: postgres
@@ -54,8 +66,11 @@ test:
     POSTGRES_DB: test_db
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: postgres
+    PGPASSWORD: postgres
   before_script:
-    - apt-get update && apt-get install -y postgresql-client
+    - apt-get update && apt-get install -y git unzip libzip-dev libpq-dev postgresql-client
+    - docker-php-ext-install zip pdo_pgsql
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
     - until pg_isready -h postgres -p 5432 -U postgres; do sleep 1; done
   script:
     - cp .env.example .env
