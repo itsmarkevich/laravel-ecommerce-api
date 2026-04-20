@@ -18,7 +18,7 @@ class SendCodeRequest extends FormRequest
     {
         if (str_starts_with($this->phone, '8')) {
             $this->merge([
-                'phone' => '+7' . substr($this->phone, 1)
+                'phone' => '+7' . substr($this->phone, 1),
             ]);
         }
     }

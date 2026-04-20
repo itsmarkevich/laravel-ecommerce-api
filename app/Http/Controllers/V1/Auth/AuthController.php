@@ -58,7 +58,7 @@ class AuthController extends Controller
 
         return response()->json(array_merge([
             'user' => new UserResource($user),
-            'requires_profile_completion' => $requiresProfileCompletion
+            'requires_profile_completion' => $requiresProfileCompletion,
         ], $tokenData));
     }
 
@@ -79,7 +79,7 @@ class AuthController extends Controller
 
         return response()->json([
             'user' => new UserResource($updatedUser),
-            'message' => 'Профиль успешно заполнен'
+            'message' => 'Профиль успешно заполнен',
         ]);
     }
 

@@ -8,9 +8,6 @@ use App\Observers\CategoryObserver;
 use App\Observers\ProductObserver;
 use App\Services\Auth\Sms\LogSmsService;
 use App\Services\Auth\Sms\SmsGateway;
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
