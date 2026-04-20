@@ -1,0 +1,64 @@
+stages:
+  - build
+  - code-quality
+
+build_image:
+  stage: build
+  image: docker:28.4.0
+  services:
+    - name: docker:28.4.0-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - docker version
+    - docker info
+    - docker build -t pizza-shop-ci .
+
+cs:
+  stage: code-quality
+  image: composer:2
+  script:
+    - composer install --no-interaction --prefer-dist
+    - composer cs:check
+
+phpstan:
+  stage: code-quality
+  image: composer:2
+  script:
+    - composer install --no-interaction --prefer-dist
+    - composer stan
+
+rector:
+  stage: code-quality
+  image: composer:2
+  script:
+    - composer install --no-interaction --prefer-dist
+    - composer rector:check
+
+test:
+  stage: code-quality
+  image: composer:2
+  services:
+    - name: postgres:18
+      alias: postgres
+  variables:
+    APP_ENV: testing
+    DB_CONNECTION: pgsql
+    DB_HOST: postgres
+    DB_PORT: 5432
+    DB_DATABASE: test_db
+    DB_USERNAME: postgres
+    DB_PASSWORD: postgres
+    POSTGRES_DB: test_db
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+  before_script:
+    - apt-get update && apt-get install -y postgresql-client
+    - until pg_isready -h postgres -p 5432 -U postgres; do sleep 1; done
+  script:
+    - cp .env.example .env
+    - composer install --no-interaction --prefer-dist
+    - php artisan key:generate --force
+    - composer test
