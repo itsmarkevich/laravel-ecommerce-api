@@ -41,6 +41,7 @@ class AdminProductTest extends TestCase
                         'description',
                         'price',
                         'weight',
+                        'type',
                         'category' => [
                             'id',
                             'name',
@@ -86,6 +87,7 @@ class AdminProductTest extends TestCase
                 'description',
                 'price',
                 'weight',
+                'type',
                 'category' => [
                     'id',
                     'name',
@@ -96,6 +98,7 @@ class AdminProductTest extends TestCase
         $this->assertDatabaseHas('products', [
             'name' => $product['name'],
             'category_id' => $product['category_id'],
+            'type' => $product['type'],
         ]);
     }
 
@@ -147,6 +150,7 @@ class AdminProductTest extends TestCase
                     'description',
                     'price',
                     'weight',
+                    'type',
                     'category' => [
                         'id',
                         'name',
@@ -186,6 +190,7 @@ class AdminProductTest extends TestCase
             'description' => 'new description',
             'price' => 600.00,
             'category_id' => $newCategory->id,
+            'type' => 'drink',
         ];
 
         $response = $this->actingAsJWT($admin)
@@ -204,6 +209,7 @@ class AdminProductTest extends TestCase
             'description' => 'new description',
             'price' => 600.00,
             'category_id' => $newCategory->id,
+            'type' => 'drink',
         ]);
     }
 

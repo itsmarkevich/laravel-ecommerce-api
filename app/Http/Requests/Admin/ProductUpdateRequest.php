@@ -27,6 +27,7 @@ class ProductUpdateRequest extends FormRequest
             'price' => 'sometimes|decimal:0,2|min:0',
             'weight' => 'sometimes|numeric|min:0',
             'category_id' => 'sometimes|exists:categories,id',
+            'type' => 'sometimes|in:pizza,drink',
         ];
     }
 }
