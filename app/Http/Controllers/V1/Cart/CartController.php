@@ -9,6 +9,8 @@ use App\Http\Resources\Cart\CartResource;
 use App\Models\CartItem;
 use App\Models\User;
 use App\Services\Cart\CartService;
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class CartController extends Controller
 {
@@ -18,15 +20,19 @@ class CartController extends Controller
     {
     }
 
-    public function index(): CartResource
+    public function index(): JsonResponse
     {
         /** @var User $user */
         $user = auth()->user();
+
         $cart = $this->cartService->getOrCreateCart($user);
-        return new CartResource($cart);
+
+        return (new CartResource($cart))
+            ->response()
+            ->setStatusCode(Response::HTTP_OK);
     }
 
-    public function store(AddCartItemRequest $request): CartResource
+    public function store(AddCartItemRequest $request): JsonResponse
     {
         /** @var User $user */
         $user = auth()->user();
@@ -39,7 +45,9 @@ class CartController extends Controller
             $validated['quantity'],
         );
 
-        return new CartResource($cart);
+        return (new CartResource($cart))
+            ->response()
+            ->setStatusCode(Response::HTTP_OK);
     }
 
     public function update(UpdateCartItemRequest $request, CartItem $cartItem): CartResource
@@ -63,13 +71,15 @@ class CartController extends Controller
         return new CartResource($cart);
     }
 
-    public function clear(): CartResource
+    public function clear(): JsonResponse
     {
         /** @var User $user */
         $user = auth()->user();
 
         $cart = $this->cartService->clear($user);
 
-        return new CartResource($cart);
+        return (new CartResource($cart))
+            ->response()
+            ->setStatusCode(Response::HTTP_OK);
     }
 }
