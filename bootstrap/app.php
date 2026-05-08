@@ -2,6 +2,8 @@
 
 use App\Exceptions\Cart\CartItemNotFoundException;
 use App\Exceptions\Cart\CartProductLimitExceededException;
+use App\Exceptions\Order\EmptyCartException;
+use App\Exceptions\Order\OrderNotFoundException;
 use App\Http\Middleware\IsAdminMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -28,6 +30,18 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (CartItemNotFoundException $e): JsonResponse {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 404);
+        });
+
+        $exceptions->render(function (EmptyCartException $e): JsonResponse {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 422);
+        });
+
+        $exceptions->render(function (OrderNotFoundException $e): JsonResponse {
             return response()->json([
                 'message' => $e->getMessage(),
             ], 404);
