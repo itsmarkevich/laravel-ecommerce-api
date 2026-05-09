@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -47,6 +48,11 @@ use Illuminate\Support\Carbon;
  */
 class Order extends Model
 {
+    /**
+     * @use HasFactory<\Database\Factories\CategoryFactory>
+     */
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
         'delivery_type',
@@ -66,7 +72,7 @@ class Order extends Model
     */
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class)
+        return $this->belongsToMany(Product::class, 'order_products')
             ->using(OrderProduct::class)
             ->withPivot('quantity', 'product_name', 'product_price');
     }

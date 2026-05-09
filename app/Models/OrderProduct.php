@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  */
 class OrderProduct extends Pivot
 {
+    protected $table = 'order_products';
+
     public $timestamps = false;
     public $incrementing = true;
     protected $fillable = [
