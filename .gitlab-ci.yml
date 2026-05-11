@@ -2,6 +2,9 @@ stages:
   - build
   - code-quality
 
+variables:
+  CI_QUALITY_IMAGE: "$CI_REGISTRY_IMAGE/ci-quality:$CI_COMMIT_SHA"
+
 build_image:
   stage: build
   image: docker:28.4.0
@@ -16,42 +19,46 @@ build_image:
     - docker info
     - docker build -t pizza-shop-ci .
 
+build_ci_image:
+  stage: build
+  image: docker:28.4.0
+  services:
+    - name: docker:28.4.0-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - docker version
+    - docker info
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker build -t "$CI_QUALITY_IMAGE" -f docker/ci/Dockerfile .
+    - docker push "$CI_QUALITY_IMAGE"
+
 cs:
   stage: code-quality
-  image: php:8.2-cli
-  before_script:
-    - apt-get update && apt-get install -y git unzip libzip-dev
-    - docker-php-ext-install zip
-    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  image: "$CI_QUALITY_IMAGE"
   script:
     - composer install --no-interaction --prefer-dist
     - composer cs:check
 
 phpstan:
   stage: code-quality
-  image: php:8.2-cli
-  before_script:
-    - apt-get update && apt-get install -y git unzip libzip-dev
-    - docker-php-ext-install zip
-    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  image: "$CI_QUALITY_IMAGE"
   script:
     - composer install --no-interaction --prefer-dist
     - composer stan
 
 rector:
   stage: code-quality
-  image: php:8.2-cli
-  before_script:
-    - apt-get update && apt-get install -y git unzip libzip-dev
-    - docker-php-ext-install zip
-    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  image: "$CI_QUALITY_IMAGE"
   script:
     - composer install --no-interaction --prefer-dist
     - composer rector:check
 
 test:
   stage: code-quality
-  image: php:8.2-cli
+  image: "$CI_QUALITY_IMAGE"
   services:
     - name: postgres:18
       alias: postgres
@@ -68,9 +75,6 @@ test:
     POSTGRES_PASSWORD: postgres
     PGPASSWORD: postgres
   before_script:
-    - apt-get update && apt-get install -y git unzip libzip-dev libpq-dev postgresql-client
-    - docker-php-ext-install zip pdo_pgsql
-    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
     - until pg_isready -h postgres -p 5432 -U postgres; do sleep 1; done
   script:
     - cp .env.example .env
