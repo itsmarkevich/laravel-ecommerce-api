@@ -1,11 +1,14 @@
 <?php
 
+use App\Exceptions\Cart\CartItemNotFoundException;
+use App\Exceptions\Cart\CartProductLimitExceededException;
+use App\Exceptions\Order\EmptyCartException;
+use App\Exceptions\Order\OrderNotFoundException;
 use App\Http\Middleware\IsAdminMiddleware;
-use App\Http\Middleware\ValidatePhoneMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
+use Illuminate\Http\JsonResponse;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -20,5 +23,27 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (CartProductLimitExceededException $e): JsonResponse {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 422);
+        });
+
+        $exceptions->render(function (CartItemNotFoundException $e): JsonResponse {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 404);
+        });
+
+        $exceptions->render(function (EmptyCartException $e): JsonResponse {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 422);
+        });
+
+        $exceptions->render(function (OrderNotFoundException $e): JsonResponse {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 404);
+        });
     })->create();

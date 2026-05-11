@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -19,12 +20,15 @@ use Illuminate\Support\Carbon;
  * @property numeric|null $weight
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string $type
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CartItem> $cartItems
+ * @property-read int|null $cart_items_count
  * @property-read \App\Models\Category|null $category
  * @property-read \App\Models\OrderProduct|null $pivot
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $orders
  * @property-read int|null $orders_count
  * @method static \Database\Factories\ProductFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product findBySlug($slug)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product findBySlug(string $slug)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product query()
@@ -35,6 +39,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product wherePrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereWeight($value)
  * @mixin \Eloquent
@@ -56,6 +61,7 @@ class Product extends Model
         'price',
         'weight',
         'category_id',
+        'type',
     ];
 
     /**
@@ -63,9 +69,9 @@ class Product extends Model
      */
     public function orders(): BelongsToMany
     {
-        return $this->belongsToMany(Order::class)
+        return $this->belongsToMany(Order::class, 'order_products')
             ->using(OrderProduct::class)
-            ->withPivot('quantity');
+            ->withPivot('quantity', 'product_name', 'product_price');
     }
 
     /**
@@ -74,5 +80,13 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * @return HasMany<CartItem, $this>
+     */
+    public function cartItems(): HasMany
+    {
+        return $this->hasMany(CartItem::class);
     }
 }

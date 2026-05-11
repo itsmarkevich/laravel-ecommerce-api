@@ -1,6 +1,6 @@
 <?php
 
-namespace Feature;
+namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Product;
@@ -41,6 +41,7 @@ class ProductTest extends TestCase
                                     'description',
                                     'price',
                                     'weight',
+                                    'type',
                                 ],
                             ],
                         ],
@@ -80,6 +81,7 @@ class ProductTest extends TestCase
                                 'description',
                                 'price',
                                 'weight',
+                                'type',
                             ],
                         ],
                     ],
@@ -119,6 +121,7 @@ class ProductTest extends TestCase
                     'description',
                     'price',
                     'weight',
+                    'type',
                 ],
             ])
             ->assertJsonFragment(

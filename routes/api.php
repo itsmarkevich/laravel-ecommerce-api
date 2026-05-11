@@ -3,6 +3,8 @@
 use App\Http\Controllers\V1\Admin\AdminCategoryController;
 use App\Http\Controllers\V1\Admin\AdminProductController;
 use App\Http\Controllers\V1\Auth\AuthController;
+use App\Http\Controllers\V1\Cart\CartController;
+use App\Http\Controllers\V1\Order\OrderController;
 use App\Http\Controllers\V1\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,5 +31,19 @@ Route::prefix('/v1')->group(function () {
     Route::prefix('/admin')->middleware(['auth:api', 'admin'])->group(function () {
         Route::apiResource('/categories', AdminCategoryController::class);
         Route::apiResource('/products', AdminProductController::class);
+    });
+
+    Route::prefix('/cart')->middleware('auth:api')->group(function () {
+        Route::get('/', [CartController::class, 'index']);
+        Route::post('/items', [CartController::class, 'store']);
+        Route::patch('/items/{cartItem}', [CartController::class, 'update']);
+        Route::delete('/items/{cartItem}', [CartController::class, 'destroy']);
+        Route::delete('/', [CartController::class, 'clear']);
+    });
+
+    Route::prefix('/orders')->middleware('auth:api')->group(function () {
+        Route::post('/', [OrderController::class, 'store']);
+        Route::get('/', [OrderController::class, 'index']);
+        Route::get('/{order}', [OrderController::class, 'show']);
     });
 });

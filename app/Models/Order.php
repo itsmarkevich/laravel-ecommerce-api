@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -11,22 +12,32 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int|null $user_id
  * @property string $delivery_type
- * @property string $address
  * @property string|null $description
- * @property string $delivery_time
  * @property string $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $delivery_region
+ * @property string|null $delivery_city
+ * @property string|null $delivery_street
+ * @property string|null $delivery_house
+ * @property string|null $delivery_entrance
+ * @property string|null $delivery_apartment
+ * @property string|null $delivery_postal_code
  * @property-read \App\Models\OrderProduct|null $pivot
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Product> $products
  * @property-read int|null $products_count
- * @property-read \App\Models\User|null $users
+ * @property-read \App\Models\User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereAddress($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereDeliveryTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereDeliveryApartment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereDeliveryCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereDeliveryEntrance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereDeliveryHouse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereDeliveryPostalCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereDeliveryRegion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereDeliveryStreet($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereDeliveryType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereId($value)
@@ -37,11 +48,23 @@ use Illuminate\Support\Carbon;
  */
 class Order extends Model
 {
+    /**
+     * @use HasFactory<\Database\Factories\CategoryFactory>
+     */
+    use HasFactory;
+
     protected $fillable = [
-      'phone',
-      'address',
-      'delivery_time',
-      'description',
+        'user_id',
+        'delivery_type',
+        'delivery_region',
+        'delivery_city',
+        'delivery_street',
+        'delivery_house',
+        'delivery_entrance',
+        'delivery_apartment',
+        'delivery_postal_code',
+        'description',
+        'status',
     ];
 
     /**
@@ -49,15 +72,15 @@ class Order extends Model
     */
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class)
+        return $this->belongsToMany(Product::class, 'order_products')
             ->using(OrderProduct::class)
-            ->withPivot('quantity');
+            ->withPivot('quantity', 'product_name', 'product_price');
     }
 
     /**
      * @return BelongsTo<User, $this>
      */
-    public function users(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

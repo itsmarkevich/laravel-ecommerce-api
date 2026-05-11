@@ -27,6 +27,7 @@ class ProductFactory extends Factory
             'description' => fake()->text(400),
             'price' => fake()->randomFloat(2, 100, 1500),
             'weight' => fake()->numberBetween(200, 1500),
+            'type' => fake()->randomElement(['pizza', 'drink']),
         ];
     }
 }

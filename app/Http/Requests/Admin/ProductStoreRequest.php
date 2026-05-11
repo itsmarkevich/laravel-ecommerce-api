@@ -27,6 +27,7 @@ class ProductStoreRequest extends FormRequest
             'price' => 'required|decimal:0,2|min:0',
             'weight' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
+            'type' => 'required|in:pizza,drink',
         ];
     }
 }
