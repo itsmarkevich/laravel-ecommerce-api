@@ -1,59 +1,217 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel E-commerce API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Backend API для pet-проекта интернет-магазина пиццы и напитков.
 
-## About Laravel
+## Стек
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.2+
+- Laravel 12
+- PostgreSQL
+- Docker / Docker Compose
+- JWT Auth (`tymon/jwt-auth`)
+- GitLab CI
+- PHP CS Fixer
+- PHPStan / Larastan
+- Rector
+- PHPUnit Feature Tests
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Что реализовано
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Публичное меню товаров и категорий
+- Админский CRUD категорий и продуктов
+- Авторизация по телефону через SMS-код
+- JWT access token, refresh и logout
+- Роли пользователей: `user`, `admin`
+- Корзина пользователя
+- Ограничения корзины: максимум 10 пицц и 20 напитков
+- Создание заказа из корзины
+- Валидация адреса доставки
+- Snapshot товаров в заказе через `product_name` и `product_price`
+- Feature-тесты для основных API-сценариев
+- CI pipeline с проверками CS Fixer, PHPStan, Rector и тестами
 
-## Learning Laravel
+## Планируемые доработки
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- Кеширование списка продуктов в Redis
+- Асинхронная генерация отчётов через RabbitMQ
+- События приложения и локализация через Events + i18n
+- Расширение API админ-панели
+- Профилирование и отладка через Laravel Telescope
+- Расширяемые характеристики товаров
+- Документация API
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Запуск проекта
 
-## Laravel Sponsors
+### Требования
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Перед запуском должны быть установлены:
 
-### Premium Partners
+- Docker
+- Docker Compose
+- Git
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 1. Клонировать репозиторий
 
-## Contributing
+```bash
+git clone <repository-url>
+cd laravel-ecommerce-api
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 2. Создать `.env`
 
-## Code of Conduct
+```bash
+cp .env.example .env
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 3. Поднять контейнеры
 
-## Security Vulnerabilities
+```bash
+docker compose up -d --build
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 4. Установить зависимости Composer
 
-## License
+```bash
+docker compose exec app composer install
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 5. Сгенерировать Laravel app key
+
+```bash
+docker compose exec app php artisan key:generate
+```
+
+### 6. Сгенерировать JWT secret
+
+```bash
+docker compose exec app php artisan jwt:secret
+```
+
+### 7. Запустить миграции
+
+```bash
+docker compose exec app php artisan migrate
+```
+
+### 8. Запустить сидеры
+
+```bash
+docker compose exec app php artisan db:seed
+```
+
+Либо можно пересоздать базу и сразу наполнить её демо-данными:
+
+```bash
+docker compose exec app php artisan migrate:fresh --seed
+```
+
+### 9. Проверить доступность приложения
+
+API доступно по адресу:
+
+```text
+http://localhost:8080/api/v1
+```
+
+Adminer доступен по адресу:
+
+```text
+http://localhost:8081
+```
+
+## Тестовые пользователи
+
+После запуска сидеров доступны демо-пользователи.
+
+Обычный пользователь:
+
+```text
+phone: +79990000001
+email: user@example.com
+role: user
+```
+
+Администратор:
+
+```text
+phone: +79990000002
+email: admin@example.com
+role: admin
+```
+
+## Авторизация
+
+Авторизация работает через SMS-код. В local-окружении SMS не отправляется реально, а записывается в лог.
+
+Отправить код:
+
+```http
+POST http://localhost:8080/api/v1/auth/send-code
+```
+
+Body:
+
+```json
+{
+  "phone": "+79990000001"
+}
+```
+
+Посмотреть код можно в SMS-логе:
+
+```bash
+docker compose exec app tail -f storage/logs/sms.log
+```
+
+Если отдельный `sms.log` отсутствует, проверь общий Laravel-лог:
+
+```bash
+docker compose exec app tail -f storage/logs/laravel.log
+```
+
+Подтвердить код:
+
+```http
+POST http://localhost:8080/api/v1/auth/verify-code
+```
+
+Body:
+
+```json
+{
+  "phone": "+79990000001",
+  "code": 123456
+}
+```
+
+В ответе будет `access_token`. Для защищённых роутов нужно передавать его в заголовке:
+
+```http
+Authorization: Bearer <access_token>
+```
+
+## Проверки качества кода
+
+Запуск тестов:
+
+```bash
+docker compose exec app composer test
+```
+
+Проверка PHP CS Fixer:
+
+```bash
+docker compose exec app composer cs:check
+```
+
+Проверка PHPStan:
+
+```bash
+docker compose exec app composer stan
+```
+
+Проверка Rector:
+
+```bash
+docker compose exec app composer rector:check
+```
